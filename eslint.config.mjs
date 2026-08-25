@@ -13,6 +13,14 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    // Disable React Compiler rules that are too strict for non-compiler projects.
+    // This project does not use the React Compiler; these rules enforce compiler
+    // semantics that conflict with standard useEffect + setState patterns.
+    rules: {
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;
