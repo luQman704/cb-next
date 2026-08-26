@@ -2,11 +2,11 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { api, Product } from '@/lib/api'
+import { api, ProductListItem } from '@/lib/api'
 import ProductCard from '@/components/ProductCard'
 
 export default function Home() {
-  const [featured, setFeatured] = useState<Product[]>([])
+  const [featured, setFeatured] = useState<ProductListItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
