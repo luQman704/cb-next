@@ -13,6 +13,17 @@ function getToken(): string | null {
   return localStorage.getItem('cb_token')
 }
 
+function getCsrfToken(): string | null {
+  if (typeof document === 'undefined') return null
+  const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/)
+  return match ? decodeURIComponent(match[1]) : null
+}
+
+async function ensureCsrf(): Promise<void> {
+  if (getCsrfToken()) return
+  await fetch('/sanctum/csrf-cookie', { credentials: 'include' })
+}
+
 function buildHeaders(extra: Record<string, string> = {}): HeadersInit {
   const headers: Record<string, string> = {
     'Accept': 'application/json',
@@ -20,11 +31,14 @@ function buildHeaders(extra: Record<string, string> = {}): HeadersInit {
   }
   const token = getToken()
   if (token) headers['Authorization'] = `Bearer ${token}`
+  const csrf = getCsrfToken()
+  if (csrf) headers['X-XSRF-TOKEN'] = csrf
   return headers
 }
 
 async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const isWrite = options.method && options.method !== 'GET'
+  if (isWrite) await ensureCsrf()
   const headers = buildHeaders(isWrite ? { 'Content-Type': 'application/json' } : {})
 
   const res = await fetch(`${API_BASE}${path}`, {

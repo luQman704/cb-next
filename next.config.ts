@@ -16,6 +16,11 @@ const nextConfig: NextConfig = {
         source: "/storage/:path*",
         destination: `${LARAVEL_API}/storage/:path*`,
       },
+      {
+        // Proxy /sanctum/* so the CSRF cookie is set on the same origin.
+        source: "/sanctum/:path*",
+        destination: `${LARAVEL_API}/sanctum/:path*`,
+      },
     ];
   },
 };
